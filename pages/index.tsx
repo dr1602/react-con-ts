@@ -1,8 +1,78 @@
+import { useState } from 'react'
+import type { MouseEventHandler } from 'react';
 import type { NextPage } from 'next';
 import Head from 'next/head';
 import { RandomFox } from '../components/RandomFox';
 
+const random = () => Math.floor(Math.random() * 123) + 1;
+
+// ahora vamos a lograr que los IDs sean unicos desde la API
+const generateID = () => Math.random().toString(36).substring(2,9);
+
 const Home: NextPage = () => {
+
+  // tambien puede ser: useState<Array<string>>
+
+  type ImageItem = { id: string; url: string };
+
+  // Hay que hablar de las minimas representaciones del contexto, que ene este caso no es el array:
+  // Array<{ id: string, url: string }
+
+  const [images, setImages] = useState<Array<ImageItem>> ([
+  ]); 
+
+  const addNewFox: MouseEventHandler <HTMLButtonElement> = (event) => { // escuchadroes usan eventos
+    const newImageItem: ImageItem = {
+      id: generateID(), 
+      url: `https://randomfox.ca/images/${random()}.jpg`, 
+    }; 
+
+  // al trabajar con TS recuerda que el 90% del tiempo las librerias ya tienen tipos, pero en un bajo porcentae o con librerias viejas sin TS, 
+  // se tendra que ahcer manual, con npm, es raro seguir este camino y no esta sugerido.
+
+  // const addNewFox = (event: { preventDefault: () => void, target: HTMLButtonElement }) => { // escuchadroes usan eventos
+
+  //   event.preventDefault()
+  //   // existen dos formas de trabajar asi, como la forma inoscente y la profesional.
+  //   // a primera vista parece bien pero inmediatamente con bases de codigo se vuelve inmantenible
+  //   // que pasa si queremos acceder a target?
+
+  //   const target = event.target
+
+  //   const newImageItem: ImageItem = {
+  //     id: generateID(), 
+  //     url: `https://randomfox.ca/images/${random()}.jpg`, 
+  //   }; 
+    // ahora ya esta explicito
+
+    // esta funcion esta implicita pero devuelve los tipos correctos!!, porque las propiedades son iguales
+
+    setImages([
+      ...images,
+      newImageItem
+    ])
+  }
+
+  // todo esta implicito, puedes revisar las clases
+
+
+  // useState<Array<{ id: string, url: string }>, lo asignaremos a un tipo como props
+
+  // ahora lo convertimos a objetos
+
+  // const [images, setImages] = useState<string[]> ([
+  //   {id: '...', url: `https://randomfox.ca/images/${random()}.jpg` }, // TS nos dice que no es string
+  //   `https://randomfox.ca/images/${random()}.jpg`,
+  //   `https://randomfox.ca/images/${random()}.jpg`,
+  //   `https://randomfox.ca/images/${random()}.jpg`,
+  // ]); // ahora ya sabe que son strings
+
+  // HAY QUE SER EXPLICITOS, hay que usar genericos, es mejor aprenderlos practifando con estos ejercicios
+
+  // img del tipo de never, porque tiene un array completamente vacio [], no tiene forma de adivinar que hay adentro
+  // set images vienen los tipos desde react y este tipo es un dispatch, esta funcion espera a un tipo, que sea al mismo que pasamos
+  // si pasamos algo de forma implicita, como un numero, resolveria que todo es un numero,
+
   return (
     <div>
       <Head>
@@ -12,10 +82,16 @@ const Home: NextPage = () => {
       </Head>
 
       <main>
-        <h1 className="text-3xl font-bold underline">
-          Hello world!
-          <RandomFox />
-        </h1>
+        <h1 className="text-3xl font-bold underline"> A random fox app! </h1>
+
+          <button onClick={addNewFox}> New Foxes! </button> {/* pensando en funcionalidad, habra una nueva funcion para generar apartir del boton las nuevas imagenes */}
+
+          {images.map(({ id, url }) => (
+            <div key={id} className="p-4"> {/*se ageraga padding y el index, ya que siempre sera diferente*/}
+              <RandomFox image={url} /> {/*alerta porque no hace parte de los atributos del componente*/}
+            </div>  // ahora necesita un key prop que viene por defaul en react pero se agregara de cualquier manera
+          ))}
+        
       </main>
 
       <footer>

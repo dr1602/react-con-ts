@@ -3,6 +3,8 @@
 
 import type { FunctionComponent, FC } from 'react'
 
+import { useRef } from'react'
+
 
 // Primer forma de hacerlo
 
@@ -17,13 +19,29 @@ import type { FunctionComponent, FC } from 'react'
 // no es bueno hacerlo implicito, es mejor hacer explicito
 
 // generate a random function between 1 and 123
-const random = () => Math.floor(Math.random() * 123) + 1;
 
-export const RandomFox = (): JSX.Element  => {
-    const image: string = `https://randomfox.ca/images/${random()}.jpg`
+type Props = { image: string };
 
-    return <img width={300} height='auto' src={image} className='rounded'/>
-}
+// si queremos mas props como "alt", tendriamos que agregar mas variables con los respectivos valores que queremos aceptar en nuestro componente.
+
+export const RandomFox = ({ image }: Props): JSX.Element  => {
+    const node = useRef()
+
+    return <img ref={node} width={300} height='auto' src={image} className='rounded'/>
+};
+
+// cambiamos el valor con disrupting, no cambiamos el tipo, destructing
+
+// export const RandomFox = (props: { image: string }): JSX.Element  => {
+
+//     return <img width={300} height='auto' src={props.image} className='rounded'/>
+// };
+
+// una propiedad imagen tipo string, para la propiedad source... pero hay mas formas de hacerlo
+// ahora acepta props, que por default son any, se puede definir de esa manera
+
+// no le dicho a mi funcion que tiene que aceptar props
+
 // lo queremos explciitoo porque queremos dejar en claro  que tiene que ser compoentne de React
 
 // tercera forma con tipos importados, la diferencia con el segundo es que tipamos la constante, no es lo mismo pero el resultado produce lo mismo
